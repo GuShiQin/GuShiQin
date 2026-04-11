@@ -3,8 +3,8 @@
     "subTitle":"你好，我叫古式琴，对社会心理学很感兴趣，QQ：2337130316",
     "avatarUrl":"https://avatars.githubusercontent.com/u/249256723?v=4&size=64",
     "GMEEK_VERSION":"last"
-
-
-"startSite":"04/10/2026",
+    "startSite":"04/10/2026",
     "allHead":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>",
+    "allHead":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekVercount.js'></script>",
+    "script":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekTOC.js'></script>",
 }
