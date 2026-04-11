@@ -15,6 +15,9 @@
 > Advises about risks or negative outcomes of certain actions.
 当然可以！以下是专门为 **Gmeek 搭建个人网站** 整理的 Markdown 速查笔记，通俗易懂，可直接复制到你的笔记软件里。
 
+html标签：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-wen-zhang-cha-ru-html-biao-qian.html
+
+
 ---
 
 # 🧠 Gmeek 常用 Markdown 语法速查笔记
