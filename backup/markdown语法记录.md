@@ -1,7 +1,18 @@
 强调关键信息使用：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-qiang-diao-guan-jian-xin-xi-shi-yong.html
-
 html标签：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-wen-zhang-cha-ru-html-biao-qian.html
 添加网页计数功能："allHead":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>",
+插入网易云外链播放器：
+`Gmeek-html<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="100%" height="86" src="https//music.163.com/outchain/player?type=2&amp;id=xxxxxxxx&amp;auto=1&amp;height=66"></iframe>`
+插入视频：
+`Gmeek-html<video src="" type="video/xxx" controls width="100%"></video>`
+autoplay //自动播放
+loop //循环播放
+muted //静音
+poster //第一帧加载之前的预览图
+插入图片：
+`Gmeek-html<img src="" alt="" width="100%">`
+
+
 
 
 ---

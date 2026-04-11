@@ -1,8 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>古式琴的Blog</title><link>https://GuShiQin.github.io/GuShiQin</link><description>你好，我叫古式琴，对社会心理学很感兴趣，QQ：2337130316</description><copyright>古式琴的Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/249256723?v=4&amp;size=64</url><title>avatar</title><link>https://GuShiQin.github.io/GuShiQin</link></image><lastBuildDate>Sat, 11 Apr 2026 15:09:04 +0000</lastBuildDate><managingEditor>古式琴的Blog</managingEditor><ttl>60</ttl><webMaster>古式琴的Blog</webMaster><item><title>markdown语法记录</title><link>https://GuShiQin.github.io/GuShiQin/post/markdown-yu-fa-ji-lu.html</link><description>强调关键信息使用：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-qiang-diao-guan-jian-xin-xi-shi-yong.html
-
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>古式琴的Blog</title><link>https://GuShiQin.github.io/GuShiQin</link><description>你好，我叫古式琴，对社会心理学很感兴趣，QQ：2337130316</description><copyright>古式琴的Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/249256723?v=4&amp;size=64</url><title>avatar</title><link>https://GuShiQin.github.io/GuShiQin</link></image><lastBuildDate>Sat, 11 Apr 2026 15:17:46 +0000</lastBuildDate><managingEditor>古式琴的Blog</managingEditor><ttl>60</ttl><webMaster>古式琴的Blog</webMaster><item><title>markdown语法记录</title><link>https://GuShiQin.github.io/GuShiQin/post/markdown-yu-fa-ji-lu.html</link><description>强调关键信息使用：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-qiang-diao-guan-jian-xin-xi-shi-yong.html
 html标签：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-wen-zhang-cha-ru-html-biao-qian.html
 添加网页计数功能：'allHead':'&lt;script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'&gt;&lt;/script&gt;',
+插入网易云外链播放器：
+`Gmeek-html&lt;iframe frameborder='no' border='0' marginwidth='0' marginheight='0' width='100%' height='86' src='https//music.163.com/outchain/player?type=2&amp;amp;id=xxxxxxxx&amp;amp;auto=1&amp;amp;height=66'&gt;&lt;/iframe&gt;`
+插入视频：
+`Gmeek-html&lt;video src='' type='video/xxx' controls width='100%'&gt;&lt;/video&gt;`
+autoplay //自动播放
+loop //循环播放
+muted //静音
+poster //第一帧加载之前的预览图
+插入图片：
+`Gmeek-html&lt;img src='' alt='' width='100%'&gt;`
+
+
 
 
 ---
