@@ -1,19 +1,4 @@
-写这个需要markdown语法，所以让ai生成了一篇
-> [!NOTE]
-> Useful information that users should know, even when skimming content.
-
-> [!TIP]
-> Helpful advice for doing things better or more easily.
-
-> [!IMPORTANT]
-> Key information users need to know to achieve their goal.
-
-> [!WARNING]
-> Urgent info that needs immediate user attention to avoid problems.
-
-> [!CAUTION]
-> Advises about risks or negative outcomes of certain actions.
-当然可以！以下是专门为 **Gmeek 搭建个人网站** 整理的 Markdown 速查笔记，通俗易懂，可直接复制到你的笔记软件里。
+强调关键信息使用：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-qiang-diao-guan-jian-xin-xi-shi-yong.html
 
 html标签：https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-wen-zhang-cha-ru-html-biao-qian.html
 
