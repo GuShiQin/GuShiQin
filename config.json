@@ -1,10 +1,9 @@
 {
     "title":"古式琴的Blog",
-    "subTitle":"你好，我叫古式琴，对社会心理学很感兴趣，国内网络有时无法访问这里，非常欢迎你的到来。QQ：2337130316，steam：1205510202",
+    "subTitle":"你好，我叫古式琴，对社会心理学很感兴趣，国内网络有时无法访问这里，非常欢迎你的到来。<br>QQ：2337130316，steam：1205510202",
     "avatarUrl":"https://avatars.githubusercontent.com/u/249256723?v=4&size=64",
     "GMEEK_VERSION":"last",
     "startSite":"04/10/2026",
-    "allHead":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>",
-    "allHead":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekVercount.js'></script>",
+    "allHead": "<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script><script src='https://blog.meekdai.com/Gmeek/plugins/GmeekVercount.js'></script>"
     "script":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekTOC.js'></script>"
 }
