@@ -2,5 +2,4 @@
 只是非常可惜我的教育资质，那个是2年的copilot使用资格，，害 就那样没了 得去咸鱼买一个账号了
 知道封号比较严格 也体验过几回了 账号直接消失 哎呀，厉害捏 下次要尽量回避ip登录的问题
 还有不好意思 我是m 这种小事情没有在意过
-<div class="gmeek-imgbox" url="/static/1.jpg"></div>
-<div class="gmeek-imgbox" url="/static/2.jpg"></div>
+![简单翻译就我的学生资质没有了](/static/1.jpg)
