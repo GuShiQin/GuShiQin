@@ -3,4 +3,3 @@
 知道封号比较严格 也体验过几回了 账号直接消失 哎呀，厉害捏 下次要尽量回避ip登录的问题
 还有不好意思 我是m 这种小事情没有在意过
 ![简单翻译就我的学生资质没有了](https://raw.githubusercontent.com/GuShiQin/GuShiQin/refs/heads/main/static/1.jpg)
-![简单翻译就我的学生资质没有了](static/1.jpg)
