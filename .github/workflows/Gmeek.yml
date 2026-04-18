@@ -51,6 +51,17 @@ jobs:
           cp -r ./* /opt/Gmeek/
           cd /opt/Gmeek/
           python Gmeek.py ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }} --issue_number '${{ github.event.issue.number }}'
+
+      - name: Keep custom homepage files
+        run: |
+          # Keep manually maintained homepage files from this repository.
+          cp -f "${{ github.workspace }}/docs/index.html" /opt/Gmeek/docs/index.html
+          cp -f "${{ github.workspace }}/docs/tag.html" /opt/Gmeek/docs/tag.html
+          cp -f "${{ github.workspace }}/docs/assets/theme.css" /opt/Gmeek/docs/assets/theme.css
+          cp -f "${{ github.workspace }}/docs/assets/theme.js" /opt/Gmeek/docs/assets/theme.js
+
+      - name: Copy generated output back
+        run: |
           cp -a /opt/Gmeek/docs ${{ github.workspace }} 
           cp -a /opt/Gmeek/backup ${{ github.workspace }} 
           cp /opt/Gmeek/blogBase.json ${{ github.workspace }} 
