@@ -626,6 +626,120 @@
         wrapper.appendChild(node);
     }
 
+    function decodeEscapedHtml(text) {
+        return String(text)
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;|&#x27;/g, "'")
+            .replace(/&amp;/g, '&');
+    }
+
+    function isSafeMediaSrc(src) {
+        if (!src) return false;
+        const value = String(src).trim();
+        if (!value) return false;
+        const lower = value.toLowerCase();
+        if (lower.indexOf('javascript:') === 0 || lower.indexOf('data:') === 0 || lower.indexOf('vbscript:') === 0) {
+            return false;
+        }
+        return /^(https?:)?\/\//i.test(value) || /^[./]/.test(value);
+    }
+
+    function normalizeMediaSrc(el) {
+        const src = el.getAttribute('src');
+        if (src) {
+            if (!isSafeMediaSrc(src)) return false;
+            if (/^\/\//.test(src)) {
+                el.setAttribute('src', 'https:' + src);
+            }
+        }
+
+        const sources = el.querySelectorAll('source[src]');
+        for (let i = 0; i < sources.length; i += 1) {
+            const source = sources[i];
+            const sourceSrc = source.getAttribute('src');
+            if (!isSafeMediaSrc(sourceSrc)) return false;
+            if (/^\/\//.test(sourceSrc)) {
+                source.setAttribute('src', 'https:' + sourceSrc);
+            }
+        }
+
+        return true;
+    }
+
+    function createEmbedNodeFromEscaped(escaped) {
+        const template = document.createElement('template');
+        template.innerHTML = decodeEscapedHtml(escaped).trim();
+        const node = template.content.firstElementChild;
+        if (!node) return null;
+        const tag = node.tagName.toLowerCase();
+        if (tag !== 'iframe' && tag !== 'video' && tag !== 'audio') return null;
+        if (!normalizeMediaSrc(node)) return null;
+
+        if (tag === 'iframe') {
+            if (!node.hasAttribute('loading')) node.setAttribute('loading', 'lazy');
+            if (!node.hasAttribute('referrerpolicy')) node.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+            if (!node.hasAttribute('allow')) node.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+        }
+        if ((tag === 'video' || tag === 'audio') && !node.hasAttribute('controls')) {
+            node.setAttribute('controls', 'controls');
+        }
+        return node;
+    }
+
+    function restoreEscapedMediaEmbeds() {
+        const postBody = document.getElementById('postBody');
+        if (!postBody) return;
+
+        const walker = document.createTreeWalker(postBody, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+                if (!node || !node.nodeValue) return NodeFilter.FILTER_REJECT;
+                if (!/&lt;(iframe|video|audio)\b/i.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+                const parent = node.parentElement;
+                if (!parent) return NodeFilter.FILTER_REJECT;
+                if (parent.closest('pre, code')) return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+
+        const textNodes = [];
+        while (walker.nextNode()) {
+            textNodes.push(walker.currentNode);
+        }
+
+        const escapedPattern = /&lt;(iframe|video|audio)\b[\s\S]*?&lt;\/\1&gt;/ig;
+        textNodes.forEach(function (textNode) {
+            const text = textNode.nodeValue;
+            let match;
+            let changed = false;
+            let cursor = 0;
+            const frag = document.createDocumentFragment();
+
+            while ((match = escapedPattern.exec(text)) !== null) {
+                const before = text.slice(cursor, match.index);
+                if (before) {
+                    frag.appendChild(document.createTextNode(before));
+                }
+                const embedNode = createEmbedNodeFromEscaped(match[0]);
+                if (embedNode) {
+                    frag.appendChild(embedNode);
+                    changed = true;
+                } else {
+                    frag.appendChild(document.createTextNode(match[0]));
+                }
+                cursor = match.index + match[0].length;
+            }
+
+            if (!changed) return;
+            const rest = text.slice(cursor);
+            if (rest) {
+                frag.appendChild(document.createTextNode(rest));
+            }
+            textNode.parentNode.replaceChild(frag, textNode);
+        });
+    }
+
     function enhanceMediaEmbeds() {
         const postBody = document.getElementById('postBody');
         if (!postBody) return;
@@ -731,6 +845,7 @@
     function init() {
         ensureBackdrop();
         decoratePage();
+        restoreEscapedMediaEmbeds();
         enhanceMediaEmbeds();
         bindCopyButtons();
         renderArticleTags();
