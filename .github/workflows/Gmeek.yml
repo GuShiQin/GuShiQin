@@ -2,6 +2,8 @@ name: build Gmeek
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
   issues:
     types: [opened, edited, reopened, closed, labeled, unlabeled, deleted]
   schedule:
