@@ -55,10 +55,35 @@ jobs:
       - name: Keep custom homepage files
         run: |
           # Keep manually maintained homepage files from this repository.
-          cp -f "${{ github.workspace }}/docs/index.html" /opt/Gmeek/docs/index.html
-          cp -f "${{ github.workspace }}/docs/tag.html" /opt/Gmeek/docs/tag.html
-          cp -f "${{ github.workspace }}/docs/assets/theme.css" /opt/Gmeek/docs/assets/theme.css
-          cp -f "${{ github.workspace }}/docs/assets/theme.js" /opt/Gmeek/docs/assets/theme.js
+          ROOT="${{ github.workspace }}"
+          if [ ! -d "$ROOT/docs" ]; then
+            echo "WARN: $ROOT/docs not found, skip custom homepage override."
+            exit 0
+          fi
+
+          if [ -f "$ROOT/docs/index.html" ]; then
+            cp -f "$ROOT/docs/index.html" /opt/Gmeek/docs/index.html
+          else
+            echo "WARN: $ROOT/docs/index.html not found, skip."
+          fi
+
+          if [ -f "$ROOT/docs/tag.html" ]; then
+            cp -f "$ROOT/docs/tag.html" /opt/Gmeek/docs/tag.html
+          else
+            echo "WARN: $ROOT/docs/tag.html not found, skip."
+          fi
+
+          if [ -f "$ROOT/docs/assets/theme.css" ]; then
+            cp -f "$ROOT/docs/assets/theme.css" /opt/Gmeek/docs/assets/theme.css
+          else
+            echo "WARN: $ROOT/docs/assets/theme.css not found, skip."
+          fi
+
+          if [ -f "$ROOT/docs/assets/theme.js" ]; then
+            cp -f "$ROOT/docs/assets/theme.js" /opt/Gmeek/docs/assets/theme.js
+          else
+            echo "WARN: $ROOT/docs/assets/theme.js not found, skip."
+          fi
 
       - name: Copy generated output back
         run: |
