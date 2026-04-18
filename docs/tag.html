@@ -136,14 +136,6 @@ function applyTagData(data){
         return;
     }
     jsonData=data;
-    Object.keys(jsonData).forEach(function(key){
-        if(key !== 'labelColorDict' && jsonData[key] && Array.isArray(jsonData[key].labels) && jsonData[key].labels.indexOf('测试') !== -1){
-            delete jsonData[key];
-        }
-    });
-    if(jsonData.labelColorDict && jsonData.labelColorDict['测试']){
-        delete jsonData.labelColorDict['测试'];
-    }
     console.log(jsonData);
     showList(labelsCount);
     const currentHash = decodeURIComponent(window.location.hash.slice(1) || 'All');
