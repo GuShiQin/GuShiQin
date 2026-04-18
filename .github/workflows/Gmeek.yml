@@ -93,6 +93,27 @@ jobs:
             echo "WARN: $ROOT/docs/assets/GmeekTOC.js not found, skip."
           fi
 
+      - name: Inject theme assets into generated post pages
+        run: |
+          POST_DIR="/opt/Gmeek/docs/post"
+          if [ ! -d "$POST_DIR" ]; then
+            echo "WARN: $POST_DIR not found, skip post asset injection."
+            exit 0
+          fi
+
+          shopt -s nullglob
+          for f in "$POST_DIR"/*.html; do
+            if ! grep -q "../assets/theme.css" "$f"; then
+              perl -0777 -i -pe "s#</head>#    <link href='../assets/theme.css' rel='stylesheet' />\\n</head>#s" "$f"
+            fi
+
+            if ! grep -q "../assets/theme.js" "$f"; then
+              perl -0777 -i -pe "s#</body>#<script defer src='../assets/theme.js'></script>\\n</body>#s" "$f"
+            fi
+
+            echo "PATCHED: $f"
+          done
+
       - name: Copy generated output back
         run: |
           cp -a /opt/Gmeek/docs ${{ github.workspace }} 
