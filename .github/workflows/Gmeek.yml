@@ -61,6 +61,8 @@ jobs:
             exit 0
           fi
 
+          mkdir -p /opt/Gmeek/docs /opt/Gmeek/docs/assets
+
           if [ -f "$ROOT/docs/index.html" ]; then
             cp -f "$ROOT/docs/index.html" /opt/Gmeek/docs/index.html
           else
@@ -85,11 +87,37 @@ jobs:
             echo "WARN: $ROOT/docs/assets/theme.js not found, skip."
           fi
 
+          if [ -f "$ROOT/docs/assets/GmeekTOC.js" ]; then
+            cp -f "$ROOT/docs/assets/GmeekTOC.js" /opt/Gmeek/docs/assets/GmeekTOC.js
+          else
+            echo "WARN: $ROOT/docs/assets/GmeekTOC.js not found, skip."
+          fi
+
       - name: Copy generated output back
         run: |
           cp -a /opt/Gmeek/docs ${{ github.workspace }} 
           cp -a /opt/Gmeek/backup ${{ github.workspace }} 
           cp /opt/Gmeek/blogBase.json ${{ github.workspace }} 
+
+      - name: Lock custom homepage files before commit
+        run: |
+          # Never let generated output overwrite manually maintained homepage files.
+          FILES=(
+            "docs/index.html"
+            "docs/tag.html"
+            "docs/assets/theme.css"
+            "docs/assets/theme.js"
+            "docs/assets/GmeekTOC.js"
+          )
+
+          for f in "${FILES[@]}"; do
+            if git cat-file -e "HEAD:$f" 2>/dev/null; then
+              git checkout -- "$f"
+              echo "LOCKED: $f"
+            else
+              echo "WARN: $f not tracked in HEAD, skip lock."
+            fi
+          done
           
       - name: update html
         run: |
