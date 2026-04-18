@@ -668,9 +668,9 @@
         return true;
     }
 
-    function createEmbedNodeFromEscaped(escaped) {
+    function createEmbedNodeFromText(rawText) {
         const template = document.createElement('template');
-        template.innerHTML = decodeEscapedHtml(escaped).trim();
+        template.innerHTML = decodeEscapedHtml(rawText).trim();
         const node = template.content.firstElementChild;
         if (!node) return null;
         const tag = node.tagName.toLowerCase();
@@ -695,7 +695,7 @@
         const walker = document.createTreeWalker(postBody, NodeFilter.SHOW_TEXT, {
             acceptNode: function (node) {
                 if (!node || !node.nodeValue) return NodeFilter.FILTER_REJECT;
-                if (!/&lt;(iframe|video|audio)\b/i.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+                if (!/(?:&lt;|<)(iframe|video|audio)\b/i.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
                 const parent = node.parentElement;
                 if (!parent) return NodeFilter.FILTER_REJECT;
                 if (parent.closest('pre, code')) return NodeFilter.FILTER_REJECT;
@@ -708,7 +708,7 @@
             textNodes.push(walker.currentNode);
         }
 
-        const escapedPattern = /&lt;(iframe|video|audio)\b[\s\S]*?&lt;\/\1&gt;/ig;
+        const mediaPattern = /(?:&lt;|<)(iframe|video|audio)\b[\s\S]*?(?:&lt;|<)\/\1(?:&gt;|>)/ig;
         textNodes.forEach(function (textNode) {
             const text = textNode.nodeValue;
             let match;
@@ -716,12 +716,12 @@
             let cursor = 0;
             const frag = document.createDocumentFragment();
 
-            while ((match = escapedPattern.exec(text)) !== null) {
+            while ((match = mediaPattern.exec(text)) !== null) {
                 const before = text.slice(cursor, match.index);
                 if (before) {
                     frag.appendChild(document.createTextNode(before));
                 }
-                const embedNode = createEmbedNodeFromEscaped(match[0]);
+                const embedNode = createEmbedNodeFromText(match[0]);
                 if (embedNode) {
                     frag.appendChild(embedNode);
                     changed = true;

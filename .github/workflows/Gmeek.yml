@@ -3,7 +3,7 @@ name: build Gmeek
 on:
   workflow_dispatch:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, reopened, closed, labeled, unlabeled, deleted]
   schedule:
     - cron: "0 16 * * *"
     
@@ -50,7 +50,7 @@ jobs:
         run: |
           cp -r ./* /opt/Gmeek/
           cd /opt/Gmeek/
-          python Gmeek.py ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }} --issue_number '${{ github.event.issue.number }}'
+          python Gmeek.py ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }}
 
       - name: Keep custom homepage files
         run: |
