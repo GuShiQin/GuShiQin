@@ -52,6 +52,41 @@
         return 'cloudy';
     }
 
+    function mapMetNoSymbol(symbolCode) {
+        const code = String(symbolCode || '').toLowerCase();
+        if (!code) return 'cloudy';
+        if (code.indexOf('thunder') !== -1) return 'thunder';
+        if (code.indexOf('snow') !== -1 || code.indexOf('sleet') !== -1 || code.indexOf('ice') !== -1) return 'snow';
+        if (code.indexOf('rain') !== -1 || code.indexOf('drizzle') !== -1 || code.indexOf('showers') !== -1) {
+            return code.indexOf('light') !== -1 ? 'drizzle' : 'rain';
+        }
+        if (code.indexOf('fog') !== -1) return 'fog';
+        if (code.indexOf('clearsky') !== -1 || code.indexOf('fair') !== -1) return 'clear';
+        if (code.indexOf('partlycloudy') !== -1 || code.indexOf('cloudy') !== -1 || code.indexOf('overcast') !== -1) return 'cloudy';
+        return 'cloudy';
+    }
+
+    function fetchJsonWithTimeout(url, timeoutMs) {
+        const controller = typeof AbortController === 'function' ? new AbortController() : null;
+        const options = controller ? { signal: controller.signal } : undefined;
+        let timeoutHandle = 0;
+        if (controller) {
+            timeoutHandle = window.setTimeout(function () {
+                controller.abort();
+            }, timeoutMs || 7000);
+        }
+        return fetch(url, options)
+            .then(function (response) {
+                if (timeoutHandle) window.clearTimeout(timeoutHandle);
+                if (!response.ok) throw new Error('request_failed_' + response.status);
+                return response.json();
+            })
+            .catch(function (error) {
+                if (timeoutHandle) window.clearTimeout(timeoutHandle);
+                throw error;
+            });
+    }
+
     function ensureBackdrop() {
         if (!document.body) return;
         if (!document.getElementById('dynamicBackdrop')) {
@@ -857,7 +892,7 @@
 
     function inferFallbackWeather() {
         if (state.season === 'winter') return 'snow';
-        if (state.season === 'spring') return 'drizzle';
+        if (state.season === 'spring') return 'cloudy';
         if (state.season === 'autumn') return 'cloudy';
         return state.hour >= 19 ? 'cloudy' : 'clear';
     }
@@ -890,27 +925,56 @@
         } catch (error) {}
     }
 
-    function loadWeatherFromCoordinates(latitude, longitude, meta) {
+    function applyWeatherResult(weather, latitude, longitude, meta) {
+        if (typeof weather !== 'string') return;
+        state.autoWeather = weather;
+        state.weather = weather;
+        applyState();
+        writeWeatherCache({
+            weather: state.autoWeather,
+            season: state.season,
+            latitude: latitude,
+            longitude: longitude,
+            region: meta && meta.region,
+            city: meta && meta.city
+        });
+    }
+
+    function loadWeatherFromOpenMeteo(latitude, longitude) {
         const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + latitude + '&longitude=' + longitude + '&current=weather_code&timezone=auto';
-        return fetch(url)
-            .then(function (response) {
-                if (!response.ok) throw new Error('weather_request_failed');
-                return response.json();
-            })
+        return fetchJsonWithTimeout(url, 7000)
             .then(function (data) {
                 if (data && data.current && typeof data.current.weather_code === 'number') {
-                    state.autoWeather = mapWeatherCode(data.current.weather_code);
-                    state.weather = state.autoWeather;
-                    applyState();
-                    writeWeatherCache({
-                        weather: state.autoWeather,
-                        season: state.season,
-                        latitude: latitude,
-                        longitude: longitude,
-                        region: meta && meta.region,
-                        city: meta && meta.city
-                    });
+                    return mapWeatherCode(data.current.weather_code);
                 }
+                throw new Error('weather_code_missing');
+            });
+    }
+
+    function loadWeatherFromMetNo(latitude, longitude) {
+        const url = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
+        return fetchJsonWithTimeout(url, 7000)
+            .then(function (data) {
+                const series = data && data.properties && data.properties.timeseries;
+                if (!Array.isArray(series) || !series.length) throw new Error('met_no_timeseries_missing');
+                const first = series[0] && series[0].data;
+                const symbol =
+                    (first && first.next_1_hours && first.next_1_hours.summary && first.next_1_hours.summary.symbol_code) ||
+                    (first && first.next_6_hours && first.next_6_hours.summary && first.next_6_hours.summary.symbol_code) ||
+                    (first && first.next_12_hours && first.next_12_hours.summary && first.next_12_hours.summary.symbol_code);
+                if (!symbol) throw new Error('met_no_symbol_missing');
+                return mapMetNoSymbol(symbol);
+            });
+    }
+
+    function loadWeatherFromCoordinates(latitude, longitude, meta) {
+        return loadWeatherFromOpenMeteo(latitude, longitude)
+            .catch(function (error) {
+                console.warn('[weather] open-meteo failed, fallback to met.no', error);
+                return loadWeatherFromMetNo(latitude, longitude);
+            })
+            .then(function (weather) {
+                applyWeatherResult(weather, latitude, longitude, meta);
             });
     }
 
@@ -946,7 +1010,9 @@
         state.weather = state.autoWeather;
         applyState();
         if (!window.fetch) return;
-        loadWeatherByIp().catch(function () {});
+        loadWeatherByIp().catch(function (error) {
+            console.warn('[weather] ip-based weather failed, keep fallback weather', error);
+        });
     }
 
     function init() {
