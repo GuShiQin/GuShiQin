@@ -65,6 +65,12 @@ jobs:
 
           mkdir -p /opt/Gmeek/docs /opt/Gmeek/docs/assets
 
+          if [ -f "$ROOT/config.json" ]; then
+            cp -f "$ROOT/config.json" /opt/Gmeek/docs/config.json
+          else
+            echo "WARN: $ROOT/config.json not found, skip config publish."
+          fi
+
           if [ -f "$ROOT/docs/index.html" ]; then
             cp -f "$ROOT/docs/index.html" /opt/Gmeek/docs/index.html
           else

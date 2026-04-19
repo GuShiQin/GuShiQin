@@ -478,6 +478,99 @@
         }
     }
 
+    function stripHtmlTags(text) {
+        return String(text || '')
+            .replace(/<[^>]*>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function setMetaContent(selector, value) {
+        if (!value) return;
+        const node = document.querySelector(selector);
+        if (node) {
+            node.setAttribute('content', value);
+        }
+    }
+
+    function applySiteConfig(config) {
+        if (!config || typeof config !== 'object') return;
+        const body = document.body;
+        const isHome = !!(body && body.classList.contains('page-home'));
+        const isTag = !!(body && body.classList.contains('page-tag'));
+
+        const title = typeof config.title === 'string' ? config.title.trim() : '';
+        const subTitle = typeof config.subTitle === 'string' ? config.subTitle : '';
+        const avatarUrl = typeof config.avatarUrl === 'string' ? config.avatarUrl.trim() : '';
+
+        if (title) {
+            if (isHome) {
+                document.title = title;
+            } else if (isTag) {
+                document.title = title + ' - Tag';
+            }
+
+            document.querySelectorAll('.blogTitle').forEach(function (node) {
+                node.textContent = title;
+            });
+            document.querySelectorAll('#footer1 a').forEach(function (node) {
+                node.textContent = title;
+            });
+            setMetaContent('meta[property="og:title"]', title);
+        }
+
+        if (isHome && subTitle) {
+            const intro = document.querySelector('.hero-intro p');
+            if (intro) {
+                intro.innerHTML = subTitle;
+            }
+
+            const plainSubTitle = stripHtmlTags(subTitle);
+            setMetaContent('meta[name="description"]', plainSubTitle);
+            setMetaContent('meta[property="og:description"]', plainSubTitle);
+        }
+
+        if (avatarUrl) {
+            const avatar = document.getElementById('avatarImg');
+            if (avatar) {
+                avatar.src = avatarUrl;
+            }
+
+            const favicon = document.querySelector('link[rel="icon"]');
+            if (favicon) {
+                favicon.setAttribute('href', avatarUrl);
+            }
+            setMetaContent('meta[property="og:image"]', avatarUrl);
+        }
+    }
+
+    function loadSiteConfig() {
+        if (!window.fetch) return;
+        const basePath = getBasePath();
+        const candidates = [basePath + 'config.json'];
+
+        if (basePath === './') {
+            candidates.push('../config.json');
+        }
+
+        function attempt(index) {
+            if (index >= candidates.length) return Promise.resolve();
+            return fetch(candidates[index], { cache: 'no-store' })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('config_request_failed');
+                    return response.json();
+                })
+                .then(function (config) {
+                    applySiteConfig(config);
+                })
+                .catch(function () {
+                    return attempt(index + 1);
+                });
+        }
+
+        return attempt(0);
+    }
+
     function loadPostIndex() {
         if (postIndexPromise) return postIndexPromise;
         postIndexPromise = fetch(getBasePath() + 'postList.json')
@@ -845,6 +938,7 @@
     function init() {
         ensureBackdrop();
         decoratePage();
+        loadSiteConfig();
         restoreEscapedMediaEmbeds();
         enhanceMediaEmbeds();
         bindCopyButtons();
