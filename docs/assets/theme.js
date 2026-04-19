@@ -547,7 +547,14 @@
     function loadSiteConfig() {
         if (!window.fetch) return;
         const basePath = getBasePath();
-        const candidates = [basePath + 'config.json'];
+        const candidates = [];
+
+        // Local root preview commonly serves files from /docs/, where the source config sits one level up.
+        if (location.pathname.indexOf('/docs/') !== -1) {
+            candidates.push('../config.json');
+        }
+
+        candidates.push(basePath + 'config.json');
 
         if (basePath === './') {
             candidates.push('../config.json');
@@ -607,7 +614,14 @@
     }
 
     function getBasePath() {
-        return location.pathname.indexOf('/post/') !== -1 ? '../' : './';
+        const pathname = String(location.pathname || '/');
+        if (pathname.indexOf('/post/') !== -1) {
+            return '../';
+        }
+        if (!/\.html?$/i.test(pathname) && !pathname.endsWith('/')) {
+            return pathname + '/';
+        }
+        return './';
     }
 
     function normalizePath(path) {
