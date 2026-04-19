@@ -528,6 +528,21 @@
         }
     }
 
+    function finalizeHomeIntro(configLoaded) {
+        const intro = document.querySelector('.hero-intro p');
+        if (!intro) return;
+        if (intro.getAttribute('data-config-pending') !== '1') return;
+
+        if (!configLoaded && !intro.innerHTML.trim()) {
+            const fallback = intro.getAttribute('data-fallback-intro');
+            if (fallback) {
+                intro.textContent = fallback;
+            }
+        }
+
+        intro.setAttribute('data-config-pending', '0');
+    }
+
     function applySiteConfig(config) {
         if (!config || typeof config !== 'object') return;
         const body = document.body;
@@ -554,12 +569,17 @@
             setMetaContent('meta[property="og:title"]', title);
         }
 
-        if (isHome && subTitle) {
+        if (isHome) {
             const intro = document.querySelector('.hero-intro p');
             if (intro) {
-                intro.innerHTML = subTitle;
+                if (subTitle) {
+                    intro.innerHTML = subTitle;
+                }
+                finalizeHomeIntro(true);
             }
+        }
 
+        if (isHome && subTitle) {
             const plainSubTitle = stripHtmlTags(subTitle);
             setMetaContent('meta[name="description"]', plainSubTitle);
             setMetaContent('meta[property="og:description"]', plainSubTitle);
@@ -580,7 +600,10 @@
     }
 
     function loadSiteConfig() {
-        if (!window.fetch) return;
+        if (!window.fetch) {
+            finalizeHomeIntro(false);
+            return;
+        }
         const basePath = getBasePath();
         const candidates = [];
 
@@ -596,7 +619,10 @@
         }
 
         function attempt(index) {
-            if (index >= candidates.length) return Promise.resolve();
+            if (index >= candidates.length) {
+                finalizeHomeIntro(false);
+                return Promise.resolve();
+            }
             return fetch(candidates[index], { cache: 'no-store' })
                 .then(function (response) {
                     if (!response.ok) throw new Error('config_request_failed');

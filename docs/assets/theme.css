@@ -387,6 +387,10 @@ body.page-post #content {
     font-size: 1.02rem;
 }
 
+.hero-intro p[data-config-pending="1"] {
+    visibility: hidden;
+}
+
 .intro-stats {
     display: flex;
     flex-wrap: wrap;
