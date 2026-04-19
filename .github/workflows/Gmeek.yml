@@ -132,6 +132,7 @@ jobs:
         run: |
           # Never let generated output overwrite manually maintained homepage files.
           FILES=(
+            "docs/config.json"
             "docs/index.html"
             "docs/tag.html"
             "docs/assets/theme.css"
